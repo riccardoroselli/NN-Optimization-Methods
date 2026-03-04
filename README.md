@@ -10,7 +10,7 @@ where:
 * $\sigma(\cdot)$ is an **elementwise activation function** of your choice,
 * $W_2$ is the **output weight matrix**, which is determined by minimizing the **Mean Squared Error (MSE)** of the produced output.
 
-The objective function is $f(z) = \| W_2 \sigma(W_1 x) - y \|_2^2$
+The objective function is $f(z) = \||W_2 \sigma(W_1 x) - y \||_2^2$
 
 with additional $L_1$ (**lasso**) regularization terms.
 
