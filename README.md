@@ -34,8 +34,8 @@ Chiara Capodagli - c.capodagli@studenti.unipi.it
 
 Roselli Riccardo - r.roselli1@studenti.unipi.it
 
-<p align="center" format="italic"> Master Degree in Data Science and Business Informatics​ </p>
+<p align="center"> Master Degree in Data Science and Business Informatics​ </p>
 
-<p align="left">
+<p align="center">
   <img src="https://upload.wikimedia.org/wikipedia/it/e/e2/Stemma_unipi.svg" width="70"/>
 </p>
