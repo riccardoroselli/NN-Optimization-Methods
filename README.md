@@ -20,9 +20,9 @@ The project must involve solving **at least medium-sized instances**, i.e.:
 
 ### Algorithms
 
-**Momentum Descent (Heavy Ball)** : A standard **momentum descent** (also known as the **heavy ball method**) optimization approach.
+**Momentum Descent (Heavy Ball)**: A standard **momentum descent** (also known as the **heavy ball method**) optimization approach.
 
-**Smoothed Gradient Methods** : An algorithm from the class of **smoothed gradient methods**.
+**Smoothed Gradient Methods**: An algorithm from the class of **smoothed gradient methods**.
 
 ### Constraints
 
