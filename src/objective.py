@@ -45,19 +45,27 @@ class LassoObjective:
     # ------------------------------------------------------------------
     def _compute_spectral_constants(self):
         """Compute L_g, μ_g, and condition number κ from H."""
+        from scipy.sparse.linalg import ArpackNoConvergence
+
         if self.m <= 2000:
-            # Safe to form H^T H explicitly
             HtH = self.H.T @ self.H
             eig_max = eigsh(HtH, k=1, which='LM', return_eigenvectors=False)[0]
-            eig_min = eigsh(HtH, k=1, which='SM', return_eigenvectors=False)[0]
+            try:
+                eig_min = eigsh(HtH, k=1, which='SM', return_eigenvectors=False,
+                                maxiter=self.m * 20)[0]
+            except ArpackNoConvergence:
+                eig_min = 0.0
         else:
-            # Matrix-free approach for large m
             op = LinearOperator(
                 (self.m, self.m),
                 matvec=lambda v: self.H.T @ (self.H @ v),
             )
             eig_max = eigsh(op, k=1, which='LM', return_eigenvectors=False)[0]
-            eig_min = eigsh(op, k=1, which='SM', return_eigenvectors=False)[0]
+            try:
+                eig_min = eigsh(op, k=1, which='SM', return_eigenvectors=False,
+                                maxiter=self.m * 20)[0]
+            except ArpackNoConvergence:
+                eig_min = 0.0
 
         self.L_g = 2.0 * float(eig_max)
         self.mu_g = 2.0 * max(float(eig_min), 0.0)

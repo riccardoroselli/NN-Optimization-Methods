@@ -32,8 +32,12 @@ class OptimizationLog:
         self.time_elapsed.append(t)
         self.sparsity.append(float(np.mean(np.abs(w) < 1e-8)))
         if w_prev is not None:
-            denom = max(1.0, np.linalg.norm(w_prev))
-            self.w_change.append(float(np.linalg.norm(w - w_prev) / denom))
+            norm_diff = np.linalg.norm(w - w_prev)
+            if np.isfinite(norm_diff):
+                denom = max(1.0, np.linalg.norm(w_prev))
+                self.w_change.append(float(norm_diff / denom))
+            else:
+                self.w_change.append(float('inf'))
         else:
             self.w_change.append(float('inf'))
 
@@ -72,12 +76,48 @@ def constant_momentum(mu: float = 0.9) -> Callable[[int], float]:
     return _schedule
 
 
+def annealing_momentum_schedule(
+    max_iter: int,
+    mu_high: float = 0.95,
+    mu_low: float = 0.5,
+    anneal_fraction: float = 0.2,
+) -> Callable[[int], float]:
+    """
+    Momentum schedule that uses high β early and anneals to low β
+    in the final fraction of iterations.
+
+    Parameters
+    ----------
+    max_iter : int
+        Total iteration budget.
+    mu_high : float
+        Momentum during the main phase.
+    mu_low : float
+        Momentum at the end of the annealing phase.
+    anneal_fraction : float
+        Fraction of max_iter over which to linearly anneal from
+        mu_high to mu_low (e.g. 0.2 = last 20% of iterations).
+    """
+    anneal_start = int(max_iter * (1.0 - anneal_fraction))
+
+    def _schedule(t: int) -> float:
+        if t < anneal_start:
+            return mu_high
+        progress = (t - anneal_start) / max(1, max_iter - anneal_start)
+        return mu_high + (mu_low - mu_high) * min(progress, 1.0)
+
+    return _schedule
+
+
 # ======================================================================
 # Stopping criterion
 # ======================================================================
 def check_stopping(w_new: np.ndarray, w_old: np.ndarray, tol: float = 1e-6) -> bool:
     """True when the relative change ‖Δw‖ / max(1, ‖w_old‖) < tol."""
-    return float(np.linalg.norm(w_new - w_old) / max(1.0, np.linalg.norm(w_old))) < tol
+    norm_diff = np.linalg.norm(w_new - w_old)
+    if not np.isfinite(norm_diff):
+        return False  # diverged — don't stop
+    return float(norm_diff / max(1.0, np.linalg.norm(w_old))) < tol
 
 
 # ======================================================================
