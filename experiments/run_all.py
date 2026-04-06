@@ -18,6 +18,7 @@ from experiments.exp_scaling import run_all as run_scaling
 from experiments.exp_comparison import run_all as run_comparison
 from experiments.exp_sparsity import run_all as run_sparsity
 from experiments.exp_full_problem import run_all as run_full_problem
+from experiments.exp_convergence_enhanced import run_all as run_convergence_enhanced
 
 
 def main():
@@ -60,6 +61,12 @@ def main():
     print("EXPERIMENT 6: FULL MULTI-COLUMN PROBLEM (10,000 WEIGHTS)")
     print("=" * 70)
     run_full_problem()
+
+    # --- Experiment 7: Enhanced Convergence ---
+    print("\n" + "=" * 70)
+    print("EXPERIMENT 7: ENHANCED CONVERGENCE (RATES + POLYAK + DYNAMIC MU)")
+    print("=" * 70)
+    run_convergence_enhanced()
 
     elapsed = time.time() - t0
     print("\n" + "=" * 70)

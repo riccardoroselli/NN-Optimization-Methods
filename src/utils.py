@@ -123,6 +123,30 @@ def check_stopping(w_new: np.ndarray, w_old: np.ndarray, tol: float = 1e-6) -> b
 # ======================================================================
 # Helpers
 # ======================================================================
+def polyak_optimal_params(L_g: float, mu_g: float):
+    """
+    Optimal Heavy Ball parameters from Polyak (1964).
+
+    For a smooth strongly convex quadratic with Lipschitz constant L_g
+    and strong convexity parameter mu_g:
+
+        η* = 4 / (√L_g + √μ_g)²
+        β* = ((√κ − 1) / (√κ + 1))²
+
+    where κ = L_g / μ_g.
+
+    Returns (None, None) when mu_g ≤ 0 (problem is not strongly convex).
+    """
+    if mu_g <= 0:
+        return None, None
+    sqrt_L = np.sqrt(L_g)
+    sqrt_mu = np.sqrt(mu_g)
+    eta_star = 4.0 / (sqrt_L + sqrt_mu) ** 2
+    sqrt_kappa = sqrt_L / sqrt_mu
+    beta_star = ((sqrt_kappa - 1.0) / (sqrt_kappa + 1.0)) ** 2
+    return eta_star, beta_star
+
+
 def compute_optimality_gap(f_current: float, f_reference: float) -> float:
     """f(w_k) − f*, floored at 1e-16 for safe log-scale plotting."""
     return max(f_current - f_reference, 1e-16)
