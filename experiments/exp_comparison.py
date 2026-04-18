@@ -20,7 +20,7 @@ from src.heavy_ball import heavy_ball, heavy_ball_two_phase
 from src.nesterov_smoothing import nesterov_smoothed
 from src.reference import solve_lasso_reference
 from data.generate_data import generate_single_column_problem
-from experiments.plotting import setup_plotting, COLORS, SWEEP_COLORS
+from experiments.plotting import setup_plotting, SWEEP_COLORS
 
 
 def run_comparison_experiment(

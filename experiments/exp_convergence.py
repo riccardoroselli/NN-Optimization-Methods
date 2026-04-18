@@ -22,7 +22,7 @@ from src.nesterov_smoothing import nesterov_smoothed
 from src.reference import solve_lasso_reference
 from src.utils import sutskever_momentum_schedule
 from data.generate_data import generate_single_column_problem
-from experiments.plotting import setup_plotting, COLORS, SWEEP_COLORS
+from experiments.plotting import setup_plotting, SWEEP_COLORS
 
 
 def run_convergence_experiment(

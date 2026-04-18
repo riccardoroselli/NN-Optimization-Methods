@@ -355,7 +355,7 @@ def plot_polyak(results, f_ref, save_dir):
 
 def plot_sparsity_high_lambda(save_dir, n=2000, d=50, m=200, lam=5.0,
                               max_iter=5000, seed=42, log_every=10):
-    """Plot 5: sparsity vs iteration at lambda=0.1."""
+    """Plot 5: sparsity vs iteration at high lambda (default lam=5.0)."""
     H, y, _ = generate_single_column_problem(n=n, d=d, m=m, seed=seed)
     obj = LassoObjective(H, y, lam=lam)
     w0 = np.zeros(m)

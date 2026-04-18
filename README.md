@@ -1,52 +1,67 @@
-# Extreme Learning Neural Network Optimization Methods
+# Optimization for Data Science — Project 12
 
-Optimization for Data Science course project — Universita di Pisa, 2025.
+First-order optimization of an L1-regularised Extreme Learning Machine output layer.
 
 ## Problem
 
-Train the output layer of an **Extreme Learning Machine (ELM)** by solving:
+Given a fixed ELM hidden-layer activation matrix `H = σ(X·W₁ᵀ)` (with `W₁` drawn once and never updated), solve
 
 ```
-minimize  h(w) = ||Hw - y||^2 + lambda ||w||_1
+minimize  h(w) = ||Hw − y||² + λ||w||₁
 ```
 
-where `H = sigma(X * W1^T)` is a fixed hidden-layer activation matrix.
+The smooth part `g(w) = ||Hw − y||²` is convex and quadratic; the non-smooth part `r(w) = λ||w||₁` is handled by subgradient, proximal, or Huber-smoothing strategies, depending on the algorithm.
 
-Two first-order algorithms are implemented and compared:
+## Algorithms
 
-- **A1 -- Heavy Ball (Polyak Momentum):** subgradient and proximal variants, Classical Momentum (CM) and Nesterov Accelerated Gradient (NAG), plus a two-phase warm-restart strategy.
-- **A2 -- Nesterov Smoothing + FISTA:** replaces L1 with a Huber smooth approximation, then applies accelerated gradient descent.
+| Name | Algorithm | L1 handling | Momentum |
+|------|-----------|-------------|----------|
+| A1-Sub-CM | Heavy Ball | Subgradient | Classical (β = 0.9) |
+| A1-Sub-NAG | Heavy Ball | Subgradient | Nesterov lookahead (β = 0.9) |
+| A1-Prox-CM | Heavy Ball | Proximal (soft-threshold) | Classical (β = 0.9) |
+| A1-Prox-NAG | Heavy Ball | Proximal (soft-threshold) | Nesterov lookahead (β = 0.9) |
+| A1-Prox-NAG-Sched | Heavy Ball | Proximal | Sutskever (2013) schedule |
+| A1-Prox-2Phase | Heavy Ball | Proximal | Phase 1 β = 0.9 → Phase 2 β = 0 |
+| A2 (fixed μ) | FISTA on Huber-smoothed h | Smoothed (Huber) | FISTA extrapolation |
+| A2 (decreasing μ) | FISTA on Huber-smoothed h | Smoothed (Huber, μₖ = μ₀/(k+1)) | FISTA extrapolation |
 
-Scale: 10,000+ weights, 1,000+ samples. No off-the-shelf solvers for the optimization itself.
-
-## Project Structure
+## Project structure
 
 ```
-src/                        Core library
-  elm.py                    ELM model (W1 generation, H computation)
-  objective.py              Lasso objective: f(w), gradient, prox, Lipschitz
-  smoothing.py              Huber smoothing of L1
-  heavy_ball.py             A1: Heavy Ball optimizer (4 variants + two-phase)
-  nesterov_smoothing.py     A2: Nesterov smoothed gradient (FISTA)
-  reference.py              sklearn Lasso reference solver
-  utils.py                  Schedules, logging, helpers
+src/                          Core library (7 modules)
+  elm.py                      ELM model (W₁ generation, H computation)
+  objective.py                Lasso objective: values, gradient, prox, L_g, μ_g
+  smoothing.py                Huber smoothing of the L1 penalty
+  heavy_ball.py               A1: Heavy Ball optimiser (+ two-phase variant)
+  nesterov_smoothing.py       A2: FISTA on Huber-smoothed objective (fixed/decreasing μ)
+  reference.py                sklearn Lasso reference solver (for f*)
+  utils.py                    OptimizationLog, schedules, stopping criterion
 
-experiments/                Experiment scripts
-  run_all.py                Master runner (all 5 experiments)
-  exp_convergence.py        Convergence curves
-  exp_params.py             Parameter sensitivity
-  exp_scaling.py            Scalability analysis
-  exp_comparison.py         Algorithm comparison (multi-seed)
-  exp_sparsity.py           Sparsity analysis
-  plotting.py               Shared plot config
+data/
+  generate_data.py            Synthetic ELM regression data generator
 
-tests/                      Verification
-  test_gradient.py          Finite-difference gradient checks
-  test_small_convergence.py Small-scale convergence vs sklearn
+experiments/                  Experiment scripts (7 + shared utilities)
+  run_all.py                  Master runner — runs all 7 experiments
+  exp_convergence.py          Exp 1: convergence curves
+  exp_params.py               Exp 2: parameter sensitivity (η, β, μ, λ)
+  exp_scaling.py              Exp 3: scalability vs problem size
+  exp_comparison.py           Exp 4: multi-seed head-to-head comparison
+  exp_sparsity.py             Exp 5: sparsity vs regularisation strength
+  exp_full_problem.py         Exp 6: full 10,000-weight multi-column problem
+  exp_convergence_enhanced.py Exp 7: fitted rates, Polyak params, dynamic μ
+  plotting.py                 Shared matplotlib configuration
+
+tests/                        Verification (4 files)
+  test_gradient.py            Finite-difference gradient checks
+  test_objective.py           LassoObjective unit tests
+  test_small_convergence.py   All variants vs sklearn reference on a small problem
+  test_decreasing_mu.py       Decreasing-μ A2 smoke test
 
 results/
-  plots/                    Generated PDF figures
-  logs/                     CSV experiment logs
+  plots/                      Generated PDF figures (22)
+  logs/                       CSV experiment logs (15)
+
+report/                       LaTeX report sources and figures
 ```
 
 ## Setup
@@ -59,69 +74,66 @@ pip install -r requirements.txt
 
 Dependencies: `numpy`, `scipy`, `matplotlib`, `scikit-learn`, `pandas`.
 
-## Reproducing Results
+## Reproducing results
 
-### 1. Run tests (verify correctness)
+### Step 1 — Run tests
 
 ```bash
-# Gradient checks (must pass before any optimization)
 python tests/test_gradient.py
-
-# Small-scale convergence test (all variants vs sklearn reference)
+python tests/test_objective.py
 python tests/test_small_convergence.py
+python tests/test_decreasing_mu.py
 ```
 
-### 2. Run all experiments
+- `test_gradient.py` — finite-difference checks for ∇g and the Huber gradient.
+- `test_objective.py` — spectral constants, composite decomposition, prox, subgradient.
+- `test_small_convergence.py` — every A1/A2 variant converges to within ≤ 2 % of the sklearn reference on an `n=50, m=10` problem.
+- `test_decreasing_mu.py` — smoke test for the decreasing-μ FISTA variant.
+
+### Step 2 — Run all experiments
 
 ```bash
 python -m experiments.run_all
 ```
 
-This runs all 5 experiments sequentially and saves:
-- **14 PDF plots** to `results/plots/`
-- **12+ CSV logs** to `results/logs/`
+Runs all **7 experiments** sequentially, saving **22 PDF plots** to `results/plots/` and **15 CSV logs** to `results/logs/`. Total runtime is approximately **455 seconds** on an Apple Silicon baseline machine.
 
-To run individual experiments:
+To run experiments individually:
 
 ```bash
-python -m experiments.exp_convergence
-python -m experiments.exp_params
-python -m experiments.exp_scaling
-python -m experiments.exp_comparison
-python -m experiments.exp_sparsity
+python -m experiments.exp_convergence          # Exp 1: convergence curves, 10 variants
+python -m experiments.exp_params               # Exp 2: parameter sensitivity (η, β, μ, λ)
+python -m experiments.exp_scaling              # Exp 3: scalability vs problem size
+python -m experiments.exp_comparison           # Exp 4: head-to-head comparison, 5 seeds
+python -m experiments.exp_sparsity             # Exp 5: sparsity vs regularisation strength
+python -m experiments.exp_full_problem         # Exp 6: full 10,000-weight multi-column problem
+python -m experiments.exp_convergence_enhanced # Exp 7: convergence rates, Polyak params, dynamic μ
 ```
 
-### 3. Default configuration
+## Default configuration
 
-| Parameter | Value | Meaning |
-|-----------|-------|---------|
-| n | 2000 | Samples |
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| n | 2000 | Training samples |
 | d | 50 | Input features |
-| m | 200 | Hidden units (= weights per output) |
-| p | 50 | Output columns (total weights: 10,000) |
-| lambda | 0.01 | L1 regularization strength |
-| activation | ReLU | Hidden layer non-linearity |
-| seed | 42 | Random seed |
+| m | 200 | Hidden units (weights per output column) |
+| p | 50 | Output columns |
+| Total weights | 10,000 | p × m, minimum required by project spec |
+| λ | 0.01 | L1 regularisation strength |
+| Activation | ReLU | Hidden-layer non-linearity |
+| seed | 42 | Global random seed |
+| L_g | ≈ 2.69 × 10⁵ | Lipschitz constant of ∇g |
+| f* | ≈ 19.005 | Reference objective (sklearn Lasso, tol = 1e-12) |
 
-## Algorithm Variants
+## Reference solution
 
-| Name | Description |
-|------|-------------|
-| A1-Sub-CM | Heavy Ball, subgradient L1, classical momentum |
-| A1-Sub-NAG | Heavy Ball, subgradient L1, Nesterov lookahead |
-| A1-Prox-CM | Heavy Ball, proximal L1, classical momentum |
-| A1-Prox-NAG | Heavy Ball, proximal L1, Nesterov lookahead |
-| A1-Prox-2Phase | Two-phase: high momentum then zero-momentum refinement |
-| A2-mu=X | Nesterov smoothing with FISTA, smoothing parameter mu |
+`src/reference.py` wraps `sklearn.linear_model.Lasso` with `fit_intercept=False`, `tol=1e-12`, and the scaling conversion `α = λ / (2n)` required to match sklearn's internal `(1/(2n))·‖Hw−y‖² + α·‖w‖₁` formulation to our own `‖Hw−y‖² + λ·‖w‖₁`. The reported `f*` is evaluated on our objective (not sklearn's internal loss) and is used only to compute the optimality gap `f(w_k) − f*` for convergence plots — it is never used as a solver for the algorithms themselves.
 
 ## Credits
 
-Chiara Capodagli - c.capodagli@studenti.unipi.it
+Chiara Capodagli — c.capodagli@studenti.unipi.it
+Roselli Riccardo  — r.roselli1@studenti.unipi.it
 
-Roselli Riccardo - r.roselli1@studenti.unipi.it
-
-<p align="center"> Master Degree in Data Science and Business Informatics </p>
-
-<p align="center">
-  <img src="https://upload.wikimedia.org/wikipedia/it/e/e2/Stemma_unipi.svg" width="70"/>
-</p>
+Optimization for Data Science
+Master Degree in Data Science and Business Informatics
+Università di Pisa, 2025

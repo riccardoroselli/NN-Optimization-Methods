@@ -69,13 +69,6 @@ def sutskever_momentum_schedule(t: int, mu_max: float = 0.99) -> float:
     return min(1.0 - 2.0 ** exponent, mu_max)
 
 
-def constant_momentum(mu: float = 0.9) -> Callable[[int], float]:
-    """Return a schedule that always yields the same momentum β."""
-    def _schedule(t: int) -> float:
-        return mu
-    return _schedule
-
-
 def annealing_momentum_schedule(
     max_iter: int,
     mu_high: float = 0.95,
@@ -145,8 +138,3 @@ def polyak_optimal_params(L_g: float, mu_g: float):
     sqrt_kappa = sqrt_L / sqrt_mu
     beta_star = ((sqrt_kappa - 1.0) / (sqrt_kappa + 1.0)) ** 2
     return eta_star, beta_star
-
-
-def compute_optimality_gap(f_current: float, f_reference: float) -> float:
-    """f(w_k) − f*, floored at 1e-16 for safe log-scale plotting."""
-    return max(f_current - f_reference, 1e-16)
