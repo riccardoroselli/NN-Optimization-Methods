@@ -119,10 +119,6 @@ def nesterov_smoothed_decreasing(
     the method converges on the TRUE (non-smooth) objective at rate O(1/k),
     better than subgradient methods' O(1/sqrt(k)).
 
-    Note: FISTA's O(1/k²) guarantee assumes fixed step size. With varying
-    L_total the guarantee doesn't strictly hold, but the method works well
-    in practice.
-
     Parameters
     ----------
     obj : LassoObjective

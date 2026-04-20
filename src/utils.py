@@ -42,7 +42,7 @@ class OptimizationLog:
             self.w_change.append(float('inf'))
 
     def to_dict(self) -> dict:
-        """Return a plain dict (easy to pass to pandas.DataFrame)."""
+        """Return a plain dict (for pandas.DataFrame)."""
         return {
             'iteration': self.iterations,
             'f_total': self.f_total,

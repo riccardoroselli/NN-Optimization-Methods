@@ -40,7 +40,7 @@ def solve_lasso_reference(H, y, lam, max_iter=100000):
     model.fit(H, y)
     w_ref = model.coef_
 
-    # Evaluate *our* objective at the reference solution
+    # Evaluate our objective at the reference solution
     r = H @ w_ref - y
     f_ref = float(r @ r) + lam * np.sum(np.abs(w_ref))
 

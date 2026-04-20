@@ -1,8 +1,5 @@
 """
 Master experiment runner — runs all experiments in sequence.
-
-Usage:
-    conda run -n ods python -m experiments.run_all
 """
 
 import sys, os
@@ -10,27 +7,22 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import time
 
-from experiments.exp_convergence import (
-    run_convergence_experiment, plot_convergence, save_logs,
-)
+from experiments.exp_convergence import run_all as run_convergence
 from experiments.exp_params import run_all_param_experiments
 from experiments.exp_scaling import run_all as run_scaling
 from experiments.exp_comparison import run_all as run_comparison
 from experiments.exp_sparsity import run_all as run_sparsity
 from experiments.exp_full_problem import run_all as run_full_problem
-from experiments.exp_convergence_enhanced import run_all as run_convergence_enhanced
 
 
 def main():
     t0 = time.time()
 
-    # --- Experiment 1: Convergence ---
+    # --- Experiment 1: Convergence (all variants, rates, Polyak, dynamic mu) ---
     print("\n" + "=" * 70)
-    print("EXPERIMENT 1: CONVERGENCE")
+    print("EXPERIMENT 1: CONVERGENCE (ALL VARIANTS + RATES + POLYAK + DYNAMIC MU)")
     print("=" * 70)
-    results, f_ref = run_convergence_experiment()
-    plot_convergence(results, f_ref)
-    save_logs(results, f_ref)
+    run_convergence()
 
     # --- Experiment 2: Parameter Sensitivity ---
     print("\n" + "=" * 70)
@@ -61,12 +53,6 @@ def main():
     print("EXPERIMENT 6: FULL MULTI-COLUMN PROBLEM (10,000 WEIGHTS)")
     print("=" * 70)
     run_full_problem()
-
-    # --- Experiment 7: Enhanced Convergence ---
-    print("\n" + "=" * 70)
-    print("EXPERIMENT 7: ENHANCED CONVERGENCE (RATES + POLYAK + DYNAMIC MU)")
-    print("=" * 70)
-    run_convergence_enhanced()
 
     elapsed = time.time() - t0
     print("\n" + "=" * 70)

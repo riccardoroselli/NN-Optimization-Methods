@@ -40,22 +40,20 @@ src/                          Core library (7 modules)
 data/
   generate_data.py            Synthetic ELM regression data generator
 
-experiments/                  Experiment scripts (7 + shared utilities)
-  run_all.py                  Master runner — runs all 7 experiments
-  exp_convergence.py          Exp 1: convergence curves
+experiments/                  Experiment scripts (6 + shared utilities)
+  run_all.py                  Master runner — runs all 6 experiments
+  exp_convergence.py          Exp 1: convergence curves, fitted rates, Polyak params, dynamic μ
   exp_params.py               Exp 2: parameter sensitivity (η, β, μ, λ)
   exp_scaling.py              Exp 3: scalability vs problem size
   exp_comparison.py           Exp 4: multi-seed head-to-head comparison
   exp_sparsity.py             Exp 5: sparsity vs regularisation strength
   exp_full_problem.py         Exp 6: full 10,000-weight multi-column problem
-  exp_convergence_enhanced.py Exp 7: fitted rates, Polyak params, dynamic μ
   plotting.py                 Shared matplotlib configuration
 
-tests/                        Verification (4 files)
+tests/                        Verification (3 files)
   test_gradient.py            Finite-difference gradient checks
   test_objective.py           LassoObjective unit tests
   test_small_convergence.py   All variants vs sklearn reference on a small problem
-  test_decreasing_mu.py       Decreasing-μ A2 smoke test
 
 results/
   plots/                      Generated PDF figures (22)
@@ -82,13 +80,11 @@ Dependencies: `numpy`, `scipy`, `matplotlib`, `scikit-learn`, `pandas`.
 python tests/test_gradient.py
 python tests/test_objective.py
 python tests/test_small_convergence.py
-python tests/test_decreasing_mu.py
 ```
 
 - `test_gradient.py` — finite-difference checks for ∇g and the Huber gradient.
 - `test_objective.py` — spectral constants, composite decomposition, prox, subgradient.
 - `test_small_convergence.py` — every A1/A2 variant converges to within ≤ 2 % of the sklearn reference on an `n=50, m=10` problem.
-- `test_decreasing_mu.py` — smoke test for the decreasing-μ FISTA variant.
 
 ### Step 2 — Run all experiments
 
@@ -96,18 +92,17 @@ python tests/test_decreasing_mu.py
 python -m experiments.run_all
 ```
 
-Runs all **7 experiments** sequentially, saving **22 PDF plots** to `results/plots/` and **15 CSV logs** to `results/logs/`. Total runtime is approximately **455 seconds** on an Apple Silicon baseline machine.
+Runs all **6 experiments** sequentially, saving plots to `results/plots/` and CSV logs to `results/logs/`.
 
 To run experiments individually:
 
 ```bash
-python -m experiments.exp_convergence          # Exp 1: convergence curves, 10 variants
+python -m experiments.exp_convergence          # Exp 1: convergence curves, fitted rates, Polyak params, dynamic μ
 python -m experiments.exp_params               # Exp 2: parameter sensitivity (η, β, μ, λ)
 python -m experiments.exp_scaling              # Exp 3: scalability vs problem size
 python -m experiments.exp_comparison           # Exp 4: head-to-head comparison, 5 seeds
 python -m experiments.exp_sparsity             # Exp 5: sparsity vs regularisation strength
 python -m experiments.exp_full_problem         # Exp 6: full 10,000-weight multi-column problem
-python -m experiments.exp_convergence_enhanced # Exp 7: convergence rates, Polyak params, dynamic μ
 ```
 
 ## Default configuration
@@ -136,4 +131,4 @@ Roselli Riccardo  — r.roselli1@studenti.unipi.it
 
 Optimization for Data Science
 Master Degree in Data Science and Business Informatics
-Università di Pisa, 2025
+Università di Pisa, 2026
