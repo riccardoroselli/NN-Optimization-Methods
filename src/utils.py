@@ -3,7 +3,6 @@ Shared utilities: optimisation logging, momentum schedules, stopping criteria.
 """
 
 import numpy as np
-import time
 from dataclasses import dataclass, field
 from typing import List, Optional, Callable
 
@@ -69,6 +68,7 @@ def sutskever_momentum_schedule(t: int, mu_max: float = 0.99) -> float:
     return min(1.0 - 2.0 ** exponent, mu_max)
 
 
+# Reference implementation only — not used by any experiment or test.
 def annealing_momentum_schedule(
     max_iter: int,
     mu_high: float = 0.95,

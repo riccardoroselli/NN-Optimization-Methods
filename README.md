@@ -56,8 +56,8 @@ tests/                        Verification (3 files)
   test_small_convergence.py   All variants vs sklearn reference on a small problem
 
 results/
-  plots/                      Generated PDF figures (22)
-  logs/                       CSV experiment logs (15)
+  plots/                      Generated PDF figures (21)
+  logs/                       CSV experiment logs (18)
 
 report/                       LaTeX report sources and figures
 ```
