@@ -27,7 +27,7 @@ The smooth part `g(w) = ||Hw − y||²` is convex and quadratic; the non-smooth 
 
 ## Results at a glance
 
-<img src="assets/convergence_vs_iter.png" alt="Convergence of all 13 algorithm variants" style="width:70%;">
+<img src="results/plots/convergence_vs_iter.png" alt="Convergence of all 13 algorithm variants" style="width:70%;">
 
 *Optimality gap vs. iteration: subgradient variants descend to ~1e-12, proximal variants plateau around 1e-5 until the two-phase restart breaks through it, and Huber-smoothed FISTA (A2) settles into a bias-limited floor.*
 
