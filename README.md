@@ -1,6 +1,6 @@
-# Optimization for Data Science — Project 12
+# First-Order Optimization for L1-Regularized Extreme Learning Machines
 
-First-order optimization of an L1-regularised Extreme Learning Machine output layer.
+Eight momentum-based and accelerated first-order algorithms, implemented from scratch, trained on a 10,000-parameter Lasso problem arising from a frozen-hidden-layer Extreme Learning Machine (ELM). The project studies three ways of handling the non-smooth L1 penalty — subgradient, proximal (soft-thresholding), and Huber smoothing — and compares them on convergence speed, hyperparameter sensitivity, scalability, and their ability to recover the exact sparsity that L1 regularization promises.
 
 ## Problem
 
@@ -24,6 +24,12 @@ The smooth part `g(w) = ||Hw − y||²` is convex and quadratic; the non-smooth 
 | A1-Prox-2Phase | Heavy Ball | Proximal | Phase 1 β = 0.9 → Phase 2 β = 0 |
 | A2 (fixed μ) | FISTA on Huber-smoothed h | Smoothed (Huber) | FISTA extrapolation |
 | A2 (decreasing μ) | FISTA on Huber-smoothed h | Smoothed (Huber, μₖ = μ₀/(k+1)) | FISTA extrapolation |
+
+## Results at a glance
+
+<img src="assets/convergence_vs_iter.png" alt="Convergence of all 13 algorithm variants" style="width:70%;">
+
+*Optimality gap vs. iteration: subgradient variants descend to ~1e-12, proximal variants plateau around 1e-5 until the two-phase restart breaks through it, and Huber-smoothed FISTA (A2) settles into a bias-limited floor.*
 
 ## Project structure
 
