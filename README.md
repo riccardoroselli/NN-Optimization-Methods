@@ -80,19 +80,7 @@ Dependencies: `numpy`, `scipy`, `matplotlib`, `scikit-learn`, `pandas`.
 
 ## Reproducing results
 
-### Step 1 — Run tests
-
-```bash
-python tests/test_gradient.py
-python tests/test_objective.py
-python tests/test_small_convergence.py
-```
-
-- `test_gradient.py` — finite-difference checks for ∇g and the Huber gradient.
-- `test_objective.py` — spectral constants, composite decomposition, prox, subgradient.
-- `test_small_convergence.py` — every A1/A2 variant converges to within ≤ 2 % of the sklearn reference on an `n=50, m=10` problem.
-
-### Step 2 — Run all experiments
+### Run all experiments
 
 ```bash
 python -m experiments.run_all
